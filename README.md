@@ -1,25 +1,27 @@
 
 # whisper-stt
 
-Проект для локальной расшифровки речи через OpenAI Whisper на Windows с GPU-ускорением (NVIDIA RTX 5070 Ti, CUDA 12.8 через `torch+cu128`).
+A guide to running speech transcription and translation locally using OpenAI Whisper on **Windows** with GPU acceleration <br/>
+(WINDOWS 10, NVIDIA RTX 5070 Ti, CUDA 12.8 via `torch+cu128`).
+
 
 https://github.com/openai/whisper
 
 
-## Создание проекта
+## Project setup
 
-- Используем `uv` + Python 3.11 (хорошо протестирована версия 3.11).
-- `torch` устанавливается из индекса PyTorch `cu128` (а не из обычного PyPI).
-- ставим `openai-whisper` и запускаем через `uv run whisper`.
-- Проверка CUDA  реальным вычислением на GPU.
+- Using `uv` + Python 3.11 (version 3.11 is well-tested).
+- `torch` is installed from the PyTorch `cu128` index (not from the regular PyPI).
+- Install `openai-whisper` and run it via `uv run whisper`.
+- Verify CUDA with a real computation on the GPU.
 
-### Создание каталога и инициализация проекта. 
+### Creating the directory and initializing the project.
 ```sh
-uv init whisper-stt --python 3.11 
+uv init whisper-stt --python 3.11
 cd whisper-stt
 ```
 
-### Важный фрагмент `pyproject.toml`  - Редактируем файл. 
+### Important `pyproject.toml` snippet — edit the file.
 
 ```toml
 [[tool.uv.index]]
@@ -31,35 +33,35 @@ explicit = true
 torch = { index = "pytorch-cu128" }
 ```
 
-`explicit = true` означает, что индекс `pytorch-cu128` используется только для `torch`, а остальные пакеты ставятся с обычного PyPI.
+`explicit = true` means that the `pytorch-cu128` index is used only for `torch`, while the other packages are installed from the regular PyPI.
 
 
-### Доставляем пакеты и зависимости 
+### Installing packages and dependencies
 ```sh
-# cтавим базовую зависимость. 
+# Install the base dependency.
 uv add torch
-    # качает 2 гигабайта 
+    # downloads 2 gigabytes
 
-# если еще не установлена - ставим 
+# If not yet installed - install it
 choco install ffmpeg
 ffmpeg -version
 
-# Проверяем версию python 
+# Check the python version
 uv run python --version
 
-# Добавляем основной пакет. 
+# Add the main package.
 uv add openai-whisper
 uv run whisper --help
 ```
 
 
-### Проверка установки
+### Verifying the installation
 
 ```sh
 uv run python -c "import torch; print('torch:', torch.__version__); print('CUDA available:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0)); print('Capability:', torch.cuda.get_device_capability()); print('GPU compute:', (torch.tensor([2.0]).cuda() * 2))"
 ```
 
-Вывод:
+Output:
 
 ```text
 torch: 2.11.0+cu128
@@ -69,27 +71,27 @@ Capability: (12, 0)
 GPU compute: tensor([4.], device='cuda:0')
 ```
 
-Это подтверждает, что Whisper может работать с GPU в этом окружении.
+This confirms that Whisper can run on the GPU in this environment.
 
 <br/>
 
-## Быстрый запуск
+## Quick start
 
-Расшифровка речи:
+Speech transcription:
 
 ```sh
 uv run whisper "C:\PATH_TO_RECORDS\record.wav" --model large --language Russian
 ```
 
-Расшифровка + перевод на английский:
+Transcription + translation to English:
 
 ```sh
 uv run whisper "C:\PATH_TO_RECORDS\record.wav" --model large --task translate --language Russian
 ```
 
 
-## Подробная документация
+## Detailed documentation
 
-Полный пошаговый гайд по установке, проверкам и устранению проблем:
+A full step-by-step guide to installation, checks, and troubleshooting:
 
 - [docs/whisper-setup-guide.md](docs/whisper-setup-guide.md)
